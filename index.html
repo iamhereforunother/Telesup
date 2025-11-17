@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Телесуфлёр</title>
+  <!-- Fonts: Nunito, Manrope, Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@700;900&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f1113;
+      --text:#dfefff;
+      --accent:#b7d8ff;
+      --muted:rgba(255,255,255,0.58);
+      --control-height:84px;
+
+      /* glass defaults (used by .glass) */
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.09);
+      --glass-contrast: rgba(0,0,0,0.12);
+    }
+    :root[data-theme='dark']{
+      --bg:#0f1113; --text:#dfefff; --accent:#b7d8ff; --muted:rgba(255,255,255,0.58);
+      --glass-bg: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.09);
+    }
+    /* Navy theme requested: deep american navy blue background, white text */
+    :root[data-theme='navy']{
+      --bg:#001f3f; /* deep navy */
+      --text:#ffffff;
+      --accent:#6fb3ff; /* visible accent on navy */
+      --muted:rgba(255,255,255,0.7);
+      --glass-bg: rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.06);
+    }
+    :root[data-theme='light']{
+      --bg:#f7f7f8; --text:#0b0b0b; --accent:#123; --muted:rgba(0,0,0,0.6);
+      --glass-bg: rgba(255,255,255,0.6); --glass-border: rgba(0,0,0,0.06); --glass-contrast: rgba(255,255,255,0.85);
+    }
+    :root[data-theme='sepia']{
+      --bg:#f4ecd8; --text:#2b230f; --accent:#6b4d1e; --muted:rgba(0,0,0,0.5);
+      --glass-bg: rgba(255,255,255,0.7); --glass-border: rgba(0,0,0,0.04);
+    }
+    :root[data-theme='contrast']{
+      --bg:#000; --text:#ffffff; --accent:#ffd400; /* bright accent for visibility */ --muted:rgba(255,255,255,0.9);
+      --glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08);
+    }
+
+    *,*:before,*:after{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+    /* Glass utilities */
+    .glass{
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+      color:var(--text);
+    }
+
+    /* Controls */
+    .controls{position:fixed;left:12px;right:12px;top:12px;z-index:120;display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;min-height:56px}
+    .controls .left{display:flex;gap:8px;align-items:center}
+    .controls label{font-size:13px;color:var(--muted);user-select:none}
+    textarea#input{width:420px;max-width:44vw;height:80px;padding:8px;border-radius:10px;border:0;resize:vertical;background:transparent;color:var(--text);outline:1px solid rgba(255,255,255,0.04);font-family:system-ui, -apple-system}
+
+    /* Range controls: styled to use theme accent (webkit/fallbacks) */
+    input[type=range]{-webkit-appearance:none;height:28px;background:transparent}
+    input[type=range]::-webkit-slider-runnable-track{height:6px;background:rgba(255,255,255,0.06);border-radius:999px}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid rgba(0,0,0,0.15);margin-top:-5px;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
+    input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06);border-radius:999px}
+    input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid rgba(0,0,0,0.15)}
+    input[type=range]::-ms-track{height:6px;background:transparent;border-color:transparent;color:transparent}
+    input[type=range]::-ms-fill-lower{background:rgba(255,255,255,0.06);border-radius:999px}
+    input[type=range]::-ms-fill-upper{background:rgba(255,255,255,0.06);border-radius:999px}
+    input[type=range]::-ms-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid rgba(0,0,0,0.15)}
+
+    select{background:transparent;border-radius:8px;padding:8px 10px;border:0;font-size:14px;color:var(--text);font-family:system-ui}
+
+    /* Buttons */
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--accent);cursor:pointer;font-size:14px;transition:transform 160ms ease, box-shadow 160ms ease}
+    .btn:focus{outline:2px solid rgba(255,255,255,0.08)}
+    .btn.glass{background:var(--glass-bg);border:1px solid var(--glass-border);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 14px rgba(0,0,0,0.12)}
+    .btn.glass:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,0.16)}
+
+    /* Viewport */
+    .viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:calc(var(--control-height) + 20px) 6vw 20px 6vw;z-index:10}
+    .frame{width:100%;max-width:1200px;height:100%;display:flex;align-items:flex-start;justify-content:center;position:relative}
+
+    /* Teleprompter content: responsive sizing, heavy weight; allow font switching */
+    .content{width:100%;max-width:980px;text-align:center;line-height:1.45;font-size:clamp(20px, 4vw + 14px, 64px);transform:translateY(0);white-space:pre-wrap;word-wrap:break-word;hyphens:auto;padding-bottom:8vh;font-weight:900;opacity:1;transition:opacity 120ms linear}
+    .content.hidden{opacity:0}
+
+    /* Restore button hidden rule (fixed: 'hidden' class was used but not defined for restore button) */
+    .restore-btn{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;z-index:200;padding:10px 14px;border-radius:999px;border:1px solid var(--glass-border);background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    .restore-btn.hidden{display:none !important;}
+
+    /* Countdown bubble (shorter animation so text appears faster) */
+    .countdown{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:300;pointer-events:none}
+    .bubble{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);color:#fff;font-size:44px;font-weight:900;opacity:0;transform:scale(0.7);}
+    .bubble.show{animation:fadePop 300ms cubic-bezier(.2,.9,.3,1) forwards}
+    @keyframes fadePop{0%{opacity:0;transform:scale(0.7)}50%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:scale(0.98)}}
+
+    /* Alignment button */
+    .align-btn{display:inline-flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:transparent;border:0;color:var(--text);cursor:pointer}
+    .align-icon{width:36px;height:24px;display:inline-block}
+
+    /* Mobile tweaks */
+    @media (max-width:760px){ textarea#input{width:200px;height:78px} .controls{flex-wrap:wrap;padding:8px;gap:6px} .content{font-size:clamp(18px,6vw,34px)} :root{--control-height:84px} .bubble{width:72px;height:72px;font-size:34px} }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){ .btn, .content, .bubble{transition:none;animation:none} }
+  </style>
+</head>
+<body>
+  <div class="controls glass" id="controls" role="region" aria-label="Панель управления телесуфлёром">
+    <div class="left">
+      <textarea id="input" placeholder="Вставьте текст сюда"></textarea>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;gap:6px;align-items:center">
+          <label for="speed">Скорость</label>
+          <input id="speed" type="range" min="10" max="300" value="40" />
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <label for="size">Размер</label>
+          <input id="size" type="range" min="18" max="120" value="48" />
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <label for="theme">Тема</label>
+      <select id="theme" title="Тема оформления">
+        <option value="dark">Тёмная</option>
+        <option value="light">Светлая</option>
+        <option value="sepia">Сепия</option>
+        <option value="navy">Navy</option>
+        <option value="contrast">Высокая контрастность</option>
+      </select>
+
+      <label for="fontSelect">Шрифт</label>
+      <select id="fontSelect" title="Выбор шрифта">
+        <option value="Nunito">Nunito (Black)</option>
+        <option value="Manrope">Manrope</option>
+        <option value="Inter">Inter</option>
+      </select>
+
+      <button id="alignBtn" class="align-btn" aria-label="Выравнивание"> 
+        <svg class="align-icon" viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.6">
+          <g>
+            <line x1="2" y1="4" x2="34" y2="4" stroke-linecap="round" />
+            <line class="short" x1="2" y1="12" x2="22" y2="12" stroke-linecap="round" />
+            <line x1="2" y1="20" x2="34" y2="20" stroke-linecap="round" />
+          </g>
+        </svg>
+      </button>
+
+      <button class="btn glass" id="startBtn">Запустить</button>
+      <button class="btn glass" id="pauseBtn">Пауза</button>
+      <button class="btn glass" id="fsBtn">Полный экран</button>
+      <button class="btn glass" id="centerBtn">Центр</button>
+    </div>
+  </div>
+
+  <div class="viewport" id="viewport">
+    <div class="frame">
+      <div id="content" class="content hidden" aria-live="polite" tabindex="-1"></div>
+    </div>
+  </div>
+
+  <div class="countdown" id="countdown" aria-hidden="true"><div class="bubble" id="bubble">2</div></div>
+  <button id="restoreBtn" class="restore-btn hidden glass">Закончить — показать интерфейс</button>
+
+  <script>
+    // Elements
+    const controls = document.getElementById('controls');
+    const input = document.getElementById('input');
+    const content = document.getElementById('content');
+    const viewport = document.getElementById('viewport');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const fsBtn = document.getElementById('fsBtn');
+    const speedRange = document.getElementById('speed');
+    const sizeRange = document.getElementById('size');
+    const themeSelect = document.getElementById('theme');
+    const fontSelect = document.getElementById('fontSelect');
+    const restoreBtn = document.getElementById('restoreBtn');
+    const countdown = document.getElementById('countdown');
+    const bubble = document.getElementById('bubble');
+    const alignBtn = document.getElementById('alignBtn');
+
+    // State
+    let rafId = null;
+    let startTime = null;
+    let startY = 0;
+    let endY = 0;
+    let currentY = 0;
+    let running = false;
+    let paused = false;
+    let uiHidden = false;
+    let alignment = 'center';
+    let savedElapsed = 0; // ms elapsed when paused
+    let contentH = 0;
+    let containerH = 0;
+    let lastSpeed = Number(speedRange.value) || 40;
+
+    // Utility: update control height for viewport padding (prevents overlap)
+    function updateControlHeightVar(){
+      const prevDisplay = controls.style.display;
+      if (controls.style.display === 'none') controls.style.display = 'flex';
+      const h = Math.round(controls.getBoundingClientRect().height) + 12;
+      document.documentElement.style.setProperty('--control-height', h + 'px');
+      viewport.style.paddingTop = (h + 8) + 'px';
+      if (prevDisplay === 'none') controls.style.display = 'none';
+    }
+
+    // Theme & font
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme);
+      sessionStorage.setItem('teleprompter_theme', theme);
+      themeSelect.value = theme;
+    }
+    function applyFont(font){
+      const map = { Nunito: "'Nunito', sans-serif", Manrope: "'Manrope', sans-serif", Inter: "'Inter', sans-serif" };
+      const weightMap = { Nunito: '900', Manrope: '700', Inter: '700' };
+      content.style.fontFamily = map[font] || map.Nunito;
+      content.style.fontWeight = weightMap[font] || '700';
+      sessionStorage.setItem('teleprompter_font', font);
+      fontSelect.value = font;
+    }
+
+    // Alignment
+    const alignOrder = ['left','center','right','justify'];
+    function updateAlign(){ 
+      content.style.textAlign = (alignment === 'justify') ? 'justify' : alignment;
+      const svg = alignBtn.querySelector('svg');
+      const short = svg.querySelector('.short');
+      if(alignment === 'left'){ short.setAttribute('x1','2'); short.setAttribute('x2','22'); }
+      if(alignment === 'center'){ short.setAttribute('x1','7'); short.setAttribute('x2','29'); }
+      if(alignment === 'right'){ short.setAttribute('x1','14'); short.setAttribute('x2','34'); }
+      if(alignment === 'justify'){ short.setAttribute('x1','2'); short.setAttribute('x2','34'); }
+    }
+    alignBtn.addEventListener('click', ()=>{ alignment = alignOrder[(alignOrder.indexOf(alignment)+1)%alignOrder.length]; updateAlign(); });
+
+    // Countdown (shortened to 2 ticks so text appears faster)
+    function runCountdown(n=2){
+      return new Promise(resolve => {
+        countdown.style.display='flex';
+        countdown.setAttribute('aria-hidden','false');
+        let i = n;
+        bubble.textContent = i;
+        bubble.classList.add('show');
+        const tick = setInterval(()=>{
+          i--;
+          if(i<=0){
+            clearInterval(tick);
+            bubble.classList.remove('show');
+            countdown.style.display='none';
+            countdown.setAttribute('aria-hidden','true');
+            resolve();
+            return;
+          }
+          bubble.textContent = i;
+          bubble.classList.remove('show');
+          void bubble.offsetWidth;
+          bubble.classList.add('show');
+        },700); // faster ticks
+      });
+    }
+
+    // Render content and sizes
+    function renderContent(){
+      content.textContent = input.value || '';
+      // Apply size slider but clamp so it fits on small screens
+      const size = Math.max(12, Math.min(120, Number(sizeRange.value) || 48));
+      content.style.fontSize = size + 'px';
+      content.classList.toggle('hidden', !content.textContent);
+      if(!content.textContent){
+        content.style.transform = 'translateY(0)';
+      }
+      recalcSizes();
+    }
+
+    function recalcSizes(){
+      containerH = viewport.clientHeight;
+      contentH = content.scrollHeight || 0;
+      startY = containerH + 24;
+      endY = -contentH - 24;
+    }
+
+    function setScrollMode(active){
+      if(active){
+        content.style.transition = 'opacity 120ms linear';
+      } else {
+        content.style.transition = 'opacity 120ms linear';
+      }
+    }
+
+    // Scrolling core
+    function startScroll(){
+      cancelAnimationFrame(rafId);
+      renderContent();
+      recalcSizes();
+      if(!content.textContent) return;
+      content.style.willChange = 'transform';
+      setScrollMode(true);
+      // place content just below viewport, but make it visible immediately (no extra delay)
+      content.classList.remove('hidden');
+      content.style.transform = `translateY(${startY}px)`;
+      void content.offsetHeight;
+
+      const speed = Number(speedRange.value) || 40; // px/sec
+      lastSpeed = speed;
+      running = true; paused = false; savedElapsed = 0;
+      startTime = performance.now(); currentY = startY;
+
+      function step(ts){
+        if(!running || paused) return;
+        const elapsed = ts - startTime;
+        const delta = (elapsed/1000) * speed;
+        const newY = startY - delta;
+        currentY = newY;
+        content.style.transform = `translateY(${newY}px)`;
+        if(newY <= endY){ running=false; paused=true; cancelAnimationFrame(rafId); return; }
+        rafId = requestAnimationFrame(step);
+      }
+      rafId = requestAnimationFrame(step);
+    }
+
+    function pauseScroll(){ if(!running) return; paused = true; running = false; cancelAnimationFrame(rafId); const distanceMoved = startY - currentY; const speed = Number(lastSpeed) || 40; savedElapsed = (distanceMoved / speed) * 1000; }
+
+    function resumeScroll(){ if(!paused) return; recalcSizes(); const speed = Number(speedRange.value) || lastSpeed || 40; lastSpeed = speed; startTime = performance.now() - savedElapsed; startY = currentY + (savedElapsed/1000) * speed; running = true; paused = false; function step(ts){ if(!running || paused) return; const elapsed = ts - startTime; const delta = (elapsed/1000) * speed; const newY = startY - delta; currentY = newY; content.style.transform = `translateY(${newY}px)`; if(newY <= -content.scrollHeight - 24){ running=false; paused=true; cancelAnimationFrame(rafId); return; } rafId = requestAnimationFrame(step); } rafId = requestAnimationFrame(step); }
+
+    function stopScroll(){ cancelAnimationFrame(rafId); running=false; paused=true; content.style.willChange = ''; content.style.transform='translateY(0)'; }
+
+    // Hide UI -> countdown -> start
+    async function hideUIandStart(){ updateControlHeightVar(); try{ if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); else if (document.body.webkitRequestFullscreen) document.body.webkitRequestFullscreen(); }catch(e){} controls.style.display='none'; restoreBtn.classList.remove('hidden'); uiHidden = true; await runCountdown(2); startScroll(); }
+    async function restoreUI(){ stopScroll(); try{ if (document.fullscreenElement) { if (document.exitFullscreen) await document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } }catch(e){} controls.style.display='flex'; restoreBtn.classList.add('hidden'); uiHidden = false; renderContent(); }
+
+    // Events
+    startBtn.addEventListener('click', ()=> hideUIandStart());
+    pauseBtn.addEventListener('click', ()=> { if(running) pauseScroll(); else if(paused) resumeScroll(); else hideUIandStart(); });
+    fsBtn.addEventListener('click', async ()=>{ try{ if(!document.fullscreenElement){ if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); else if (document.body.webkitRequestFullscreen) document.body.webkitRequestFullscreen(); } else { if (document.exitFullscreen) await document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } }catch(e){} });
+    restoreBtn.addEventListener('click', restoreUI);
+
+    input.addEventListener('input', ()=>{ renderContent(); updateControlHeightVar(); });
+    sizeRange.addEventListener('input', ()=>{ renderContent(); });
+    speedRange.addEventListener('input', ()=>{ if(running && !paused){ const oldSpeed = lastSpeed || Number(speedRange.value); const newSpeed = Number(speedRange.value); const distanceMoved = startY - currentY; const elapsedSoFar = (distanceMoved / oldSpeed) * 1000; lastSpeed = newSpeed; savedElapsed = (distanceMoved / newSpeed) * 1000; startTime = performance.now() - savedElapsed; } else if (paused){ const pausedSpeed = Number(speedRange.value); const distanceMoved = startY - currentY; savedElapsed = (distanceMoved / pausedSpeed) * 1000; lastSpeed = pausedSpeed; } else { lastSpeed = Number(speedRange.value); } });
+    themeSelect.addEventListener('change', (e)=> applyTheme(e.target.value));
+    fontSelect.addEventListener('change', (e)=> applyFont(e.target.value));
+    updateAlign();
+
+    // shortcuts and init
+    window.addEventListener('keydown', (e)=>{ if(e.code === 'Space'){ e.preventDefault(); if(running) pauseScroll(); else if(paused) resumeScroll(); else hideUIandStart(); } if(e.key.toLowerCase() === 'f'){ e.preventDefault(); if(!document.fullscreenElement){ if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); } else { if (document.exitFullscreen) document.exitFullscreen(); } } if(e.key === 'Escape'){ if(document.fullscreenElement){ if (document.exitFullscreen) document.exitFullscreen(); } stopScroll(); } });
+
+    // Handle resize: recalc sizes and adjust animation so text doesn't jump
+    let resizeTimer = null;
+    window.addEventListener('resize', ()=>{ clearTimeout(resizeTimer); resizeTimer = setTimeout(()=>{ const prevContainerH = containerH; recalcSizes(); if(running && !paused){ const speed = Number(lastSpeed) || 40; const elapsed = performance.now() - startTime; // preserve elapsed
+          // adjust startY so current position remains consistent
+          startY = currentY + (elapsed/1000) * speed;
+          startTime = performance.now() - elapsed;
+        } else if(paused){
+          const speed = Number(lastSpeed) || Number(speedRange.value) || 40;
+          startY = currentY + (savedElapsed/1000) * speed;
+        }
+        updateControlHeightVar();
+      }, 120); });
+
+    // Init on load
+    window.addEventListener('load', ()=>{ updateControlHeightVar(); renderContent(); const savedTheme = sessionStorage.getItem('teleprompter_theme') || 'dark'; const savedFont = sessionStorage.getItem('teleprompter_font') || 'Nunito'; applyTheme(savedTheme); applyFont(savedFont); const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; if(isIOS && !sessionStorage.getItem('teleprompter_font')){ fontSelect.value = 'Inter'; applyFont('Inter'); } setTimeout(updateControlHeightVar, 50); });
+
+    // Accessibility: clicking content toggles pause/resume
+    content.style.cursor = 'default';
+    content.addEventListener('click', ()=>{ if(running) pauseScroll(); else if(paused) resumeScroll(); });
+  </script>
+</body>
+</html>
