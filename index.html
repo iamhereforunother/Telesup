@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Телесуфлёр — финал (с заставкой)</title>
+  <title>s</title>
 
-  <!-- Fonts -->
+  <!-- Fonts (optional, копируй если нужно интернет) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@700;900&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
       --range-thumb-border-light: rgba(255,255,255,0.9);
     }
 
-    /* THEMES (as provided) */
+    /* THEMES */
     :root[data-theme='dark']{
       --bg:#0B0D0F; --text:#f7f7f7; --accent:#6fb3ff; --muted:rgba(255,255,255,0.58);
       --glass-bg: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.09);
@@ -97,7 +97,6 @@
     input[type=range]{-webkit-appearance:none;height:8px;background:transparent;width:100%}
     input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(0,0,0,0.05)}
     input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-6px;width:20px;height:20px;border-radius:50%;background:var(--range-thumb-gray);border:2px solid var(--range-thumb-border-dark);box-shadow:0 4px 8px rgba(0,0,0,0.25)}
-    /* Light theme thumb border tweak */
     :root[data-theme='light'] input[type=range]::-webkit-slider-thumb{border:2px solid var(--range-thumb-border-light)}
     input[type=range]:focus{outline:none}
     input[type=range]::-moz-range-track{height:8px;border-radius:999px;background:rgba(255,255,255,0.06)}
@@ -108,7 +107,7 @@
     .panel-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:12px}
     .panel-actions .btn{min-width:92px}
 
-    /* ======= NEW: refined select + button styles to match updated design ======= */
+    /* refined select + button styles */
     select{
       -webkit-appearance:none;
       appearance:none;
@@ -125,7 +124,6 @@
     select:hover{ background: rgba(255,255,255,0.06); }
     select:focus{ outline: none; border-color: var(--accent); }
 
-    /* panel action buttons: compact glassy pills */
     .panel-actions .btn{
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
@@ -149,60 +147,48 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.12));
       border-color: rgba(255,255,255,0.36);
     }
-    /* ======================================================================== */
 
-    /* ===== Splash / intro (frosted glass + emoji) ===== */
+    /* SPLASH — frosted glass + emoji (adjusted) */
     .splash {
       position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-      background: rgba(255,255,255,0.02); /* subtle veil */
+      background: rgba(255,255,255,0.02);
       -webkit-backdrop-filter: blur(14px) saturate(120%);
       backdrop-filter: blur(14px) saturate(120%);
       opacity:0;pointer-events:none;transition:opacity 300ms ease;backface-visibility:hidden;
     }
     .splash.visible{opacity:1;pointer-events:auto}
-
-    .splash-inner{
-      display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transform:translateZ(0);
-    }
-
+    .splash-inner{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transform:translateZ(0);}
     .splash-emoji{
-      font-size:clamp(48px, 18vw, 140px);line-height:1;opacity:0;transform:scale(0.9);
-      animation: splashEmojiAnim 5s cubic-bezier(.2,.9,.25,1) forwards;
+      font-size:3.6rem;line-height:1;opacity:0;transform:scale(0.92);
+      animation: splashEmojiAnim 3.6s cubic-bezier(.22,.9,.33,1) forwards;
       will-change:opacity, transform;
-      text-shadow: 0 6px 30px rgba(0,0,0,0.5);
+      text-shadow: 0 6px 30px rgba(0,0,0,0.45);
     }
-
     @keyframes splashEmojiAnim{
-      0%{opacity:0; transform:scale(0.9);} 
-      12%{opacity:1; transform:scale(1.06);} 
-      82%{opacity:1; transform:scale(1);} 
-      100%{opacity:0; transform:scale(0.94);} 
+      0%{opacity:0; transform:scale(0.85);} 
+      28%{opacity:1; transform:scale(1.06);} /* более выраженное плавное появление */
+      74%{opacity:1; transform:scale(1);} 
+      100%{opacity:0; transform:scale(0.95);} 
     }
-
-    /* Optionally show a small caption (hidden by default) */
     .splash-caption{font-size:14px;color:var(--muted);opacity:0.9}
-
-    /* Disable interactions while splash active */
     body.splash-active *:not(.splash){pointer-events:none !important}
-
     @media (max-width:700px){ .splash-emoji{font-size:clamp(40px, 28vw, 120px);} }
-    /* ================================================== */
+    @media (prefers-reduced-motion: reduce){ .panel{transition:none} .content{transition:none} .splash-emoji{animation:none;opacity:1} }
 
     @media (max-width:700px){
       .panel{left:6px;right:6px;border-radius:12px}
       :root{ --btn-size:46px }
       .open-panel-btn{min-width:96px;padding:6px 8px;font-size:13px}
     }
-    @media (prefers-reduced-motion: reduce){ .panel{transition:none} .content{transition:none} .splash-emoji{animation:none;opacity:1} }
   </style>
 </head>
 <body>
 
-  <!-- Splash overlay (added in markup so CSS loads with document) -->
+  <!-- Splash overlay -->
   <div id="splash" class="splash" aria-hidden="true">
     <div class="splash-inner">
       <div id="splashEmoji" class="splash-emoji" aria-hidden="true">✨</div>
-      <!-- optional caption: <div class="splash-caption">Телесуфлёр</div> -->
+      <!-- <div class="splash-caption">Телесуфлёр</div> -->
     </div>
   </div>
 
@@ -221,7 +207,6 @@
         </button>
 
         <button id="pauseBtn" class="btn outline" aria-label="Пауза" title="Пауза / продолжить">
-          <!-- SVG pause icon (filled rectangles) -->
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <rect x="6" y="4" width="4" height="16" rx="1"></rect>
             <rect x="14" y="4" width="4" height="16" rx="1"></rect>
@@ -264,7 +249,7 @@
           <input id="size" type="range" min="18" max="120" value="48" />
         </div>
 
-        <!-- Single-row options as you requested: alignment, uppercase, theme, font -->
+        <!-- Single-row options -->
         <div class="form-row" style="margin-top:6px;">
           <div style="display:flex;flex-direction:column;gap:6px;">
             <label for="alignSelect">Выравнивание</label>
@@ -506,7 +491,7 @@
       else startScroll();
     });
 
-    // Tap on content toggles pause/start (user liked)
+    // Tap on content toggles pause/start
     content.addEventListener('click', ()=>{
       if(running) pauseScroll();
       else if(paused && !finished) startScroll();
@@ -538,7 +523,7 @@
       setTimeout(()=> setControlHeight(toolbar.getBoundingClientRect().height || 64), 80);
 
       // Trigger splash animation on load
-      startSplashIntro({ duration: 5000 });
+      startSplashIntro({ duration: 3600 });
     });
 
     // Prevent accidental selection when interacting with controls
@@ -548,19 +533,12 @@
       });
     });
 
-
-    /* ===== Splash intro logic =====
-       - shows overlay with frosted blur and a randomly chosen emoji
-       - keeps overlay active for `duration` ms (default 5000)
-       - emoji fades in/out using CSS animation
-       - after animation completes overlay is removed and interactions re-enabled
-    */
+    /* ===== Splash intro logic ===== */
     function startSplashIntro({ duration = 5000 } = {}){
       const splash = document.getElementById('splash');
       const splashEmoji = document.getElementById('splashEmoji');
       const emojis = ['🎄','🍊','🌲','🦌','🎅🏻','🤶🏻','☃️','❄️','🎁','✨','🤍','🌨','🪽','🪵','🍶','🥧','🌌','🎊','💭','🧝🏻','🧭','🩶'];
 
-      // Respect reduced-motion preference: if user prefers reduced motion, show simple overlay briefly without animation
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // Choose random emoji
@@ -573,40 +551,35 @@
       splash.classList.add('visible');
       splash.setAttribute('aria-hidden', 'false');
 
-      // If reduced motion -> skip fancy animation and just show overlay for `duration`
       if(prefersReduced){
         splashEmoji.style.opacity = '1';
-        setTimeout(cleanupSplash, duration);
+        setTimeout(cleanupSplash, Math.min(duration, 2800));
         return;
       }
 
-      // Wait for the emoji animation to finish (we set animation duration same as `duration`)
-      // We also set a safety timeout in case animationend doesn't fire.
       let done = false;
       function cleanupSplash(){
         if(done) return; done = true;
         // fade overlay out
         splash.classList.remove('visible');
-        // small delay to let overlay opacity transition complete (match the CSS transition 300ms)
+        // allow CSS opacity transition (300ms) then remove
         setTimeout(()=>{
           splash.setAttribute('aria-hidden', 'true');
           if(splash.parentNode) splash.parentNode.removeChild(splash);
           document.body.classList.remove('splash-active');
-        }, 320);
+        }, 340);
       }
 
-      // Use animationend on the emoji element (covers most browsers)
+      // Use animationend on the emoji element
       const handleAnimEnd = (e)=>{
-        // ensure it's the intended animation (some browsers may fire for other reasons)
         cleanupSplash();
       };
       splashEmoji.addEventListener('animationend', handleAnimEnd, { once: true });
 
-      // Safety timeout: in case animationend doesn't fire
-      setTimeout(cleanupSplash, duration + 400);
+      // Safety timeout in case animationend doesn't fire
+      setTimeout(cleanupSplash, duration + 420);
     }
     /* ===== End splash logic ===== */
-
   </script>
 </body>
 </html>
