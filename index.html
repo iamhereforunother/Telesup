@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Teleprompter🎄🌌</title>
+  <title>Телесуфлёр — панель управления (фикс и стиль)</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@700;900&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg:#0f1113;
-      --text:#dfefff;
+      --bg:#0B0D0F;
+      --text:#f7f7f7;
       --accent:#6fb3ff;
       --muted:rgba(255,255,255,0.58);
       --control-height:72px;
@@ -19,13 +21,15 @@
       --panel-height:0px;
       --glass-bg: rgba(255,255,255,0.06);
       --glass-border: rgba(255,255,255,0.09);
-      --glass-shadow: 0 8px 28px rgba(0,0,0,0.35);
+      --glass-shadow: 0 10px 36px rgba(0,0,0,0.5);
       --btn-size:52px;
       --btn-radius:12px;
-      --transition-fast: 220ms cubic-bezier(.2,.9,.2,1);
+      --transition-fast: 260ms cubic-bezier(.2,.9,.2,1);
+      --transition-slow: 420ms cubic-bezier(.2,.9,.2,1);
     }
 
-  :root[data-theme='dark']{
+    /* USER THEMES EXACTLY AS PROVIDED */
+    :root[data-theme='dark']{
       --bg:#0B0D0F; --text:#f7f7f7; --accent:#6fb3ff; --muted:rgba(255,255,255,0.58);
       --glass-bg: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.09);
     }
@@ -49,49 +53,85 @@
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial; -webkit-font-smoothing:antialiased}
     *,*:before,*:after{box-sizing:border-box}
     body{transition:background var(--transition-fast), color var(--transition-fast)}
-    .glass{ background:var(--glass-bg); border:1px solid var(--glass-border); -webkit-backdrop-filter: blur(8px) saturate(120%); backdrop-filter: blur(8px) saturate(120%); box-shadow: var(--glass-shadow); color:var(--text); transition: all var(--transition-fast); }
+    .glass{
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      -webkit-backdrop-filter: blur(10px) saturate(120%);
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: var(--glass-shadow);
+      color:var(--text);
+      transition: background var(--transition-slow), border-color var(--transition-slow), box-shadow var(--transition-slow);
+    }
 
-    /* Viewport & content */
-    .viewport{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:calc(20px + env(safe-area-inset-top)) 6vw calc(var(--control-height) + 20px + env(safe-area-inset-bottom)) 6vw; z-index:1; -webkit-user-select:none; user-select:none; }
-    .frame{ width:100%; max-width:1200px; height:100%; display:flex; align-items:flex-start; justify-content:center; }
-    .content{ width:100%; max-width:980px; text-align:center; line-height:1.45; font-size:clamp(20px,4vw + 14px,64px); white-space:pre-wrap; hyphens:auto; padding-bottom:8vh; font-weight:900; transition:transform 120ms linear, opacity 200ms linear; will-change:transform; overflow-wrap:break-word; word-break:break-word; -webkit-hyphens:auto; text-align-last:left; text-justify:inter-word; }
+    /* Teleprompter viewport */
+    .viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:calc(18px + env(safe-area-inset-top)) 6vw calc(var(--control-height) + 18px + env(safe-area-inset-bottom)) 6vw;z-index:1;touch-action:none}
+    .frame{width:100%;max-width:1200px;height:100%;display:flex;align-items:flex-start;justify-content:center}
+    .content{
+      width:100%;max-width:980px;text-align:center;line-height:1.45;font-size:clamp(20px,4vw + 14px,64px);white-space:pre-wrap;hyphens:auto;padding-bottom:8vh;font-weight:900;transition:transform var(--transition-slow) linear, opacity 200ms linear;will-change:transform;
+      overflow-wrap:break-word;word-break:break-word;-webkit-hyphens:auto;text-align-last:left;text-justify:inter-word;
+      -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+    }
     .content.hidden{opacity:0}
 
-    /* Toolbar minimal: only 4 buttons */
-    .toolbar{ position:fixed; left:12px; right:12px; bottom:12px; z-index:120; height:var(--toolbar-height); min-height:48px; border-radius:12px; display:flex; align-items:center; gap:8px; padding:8px 12px; box-sizing:border-box; }
-    .toolbar.glass{ background:var(--glass-bg); border:1px solid var(--glass-border); backdrop-filter:blur(8px); box-shadow:var(--glass-shadow); }
+    /* Bottom toolbar — only 4 buttons, consistent borders for non-primary */
+    .toolbar{position:fixed;left:12px;right:12px;bottom:12px;z-index:120;height:var(--toolbar-height);min-height:48px;border-radius:12px;display:flex;align-items:center;gap:8px;padding:8px 12px;box-sizing:border-box}
+    .toolbar.glass{background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(8px);box-shadow:var(--glass-shadow)}
 
-    .controls{ display:flex; align-items:center; gap:10px; width:100%; }
-    .left{ display:flex; gap:8px; align-items:center; }
-    .right{ margin-left:auto; display:flex; gap:8px; align-items:center; }
+    .controls{display:flex;align-items:center;justify-content:space-between;width:100%}
+    .left{display:flex;gap:8px;align-items:center}
+    .right{display:flex;gap:8px;align-items:center}
 
-    .btn{ background:transparent; border:0; color:var(--text); width:var(--btn-size); height:var(--btn-size); padding:6px; border-radius:var(--btn-radius); cursor:pointer; font-size:18px; display:inline-flex; align-items:center; justify-content:center; transition: transform 120ms, background 120ms; box-sizing:border-box; }
-    .btn.primary{ background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); }
-    .btn:active{ transform:scale(0.98) }
-    .btn .icon{ display:inline-block; line-height:1; font-size:20px; user-select:none; }
+    .btn{background:transparent;border:0;color:var(--text);width:var(--btn-size);height:var(--btn-size);padding:6px;border-radius:var(--btn-radius);cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;transition:transform 120ms, background 120ms}
+    .btn:active{transform:scale(0.98)}
+    .btn.primary{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04)}
+    .btn.outline{border:1px solid var(--glass-border);background:transparent}
+    .btn .icon{display:inline-block;font-size:18px;line-height:1}
 
-    .open-panel-btn{ min-width:120px; height:var(--btn-size); padding:8px 12px; font-weight:700; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; }
+    .open-panel-btn{min-width:110px;height:var(--btn-size);padding:8px 10px;font-weight:600;border-radius:10px;font-size:14px}
 
     /* Panel */
-    .panel-wrap{ position:fixed; left:8px; right:8px; bottom:calc(12px + var(--toolbar-height)); z-index:150; display:block; pointer-events:none; }
-    .panel{ width:100%; max-width:980px; margin:0 auto; border-radius:14px 14px 8px 8px; overflow:hidden; background:var(--glass-bg); border:1px solid var(--glass-border); box-shadow:0 30px 80px rgba(0,0,0,0.6); transform:translateY(110%); transition:transform 320ms cubic-bezier(.2,.9,.2,1); pointer-events:auto; max-height:80vh; display:flex; flex-direction:column; -webkit-backdrop-filter: blur(10px) saturate(120%); backdrop-filter: blur(10px) saturate(120%); }
-    .panel.open{ transform:translateY(0); }
-    .panel .handle{ height:56px; display:flex; align-items:center; gap:10px; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.02); }
-    .panel .body{ padding:12px; overflow:auto; }
-
-    /* Fields layout consistent (grid) */
-    .form-grid{ display:grid; grid-template-columns: 1fr 160px; gap:12px 12px; align-items:start; }
-    .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:6px; }
-    label{ font-size:13px; color:var(--muted); }
-    textarea#input{ width:100%; min-height:120px; resize:vertical; padding:10px; border-radius:10px; border:0; background:rgba(255,255,255,0.02); color:var(--text); outline:1px solid rgba(255,255,255,0.03); font-family:inherit; }
-    select, input[type=range]{ background:transparent; border-radius:8px; padding:8px; border:1px solid rgba(255,255,255,0.03); color:var(--text); width:100%; box-sizing:border-box; }
-
-    @media (max-width:700px){
-      :root{ --btn-size:46px; }
-      .form-grid{ grid-template-columns: 1fr; }
-      .panel{ left:6px; right:6px; border-radius:12px; }
+    .panel-wrap{position:fixed;left:8px;right:8px;bottom:calc(12px + var(--toolbar-height));z-index:150;display:block;pointer-events:none}
+    .panel{
+      width:100%;max-width:980px;margin:0 auto;border-radius:14px 14px 8px 8px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:0 30px 80px rgba(0,0,0,0.6);transform:translateY(110%);transition:transform var(--transition-fast) cubic-bezier(.2,.9,.2,1);pointer-events:auto;max-height:80vh;display:flex;flex-direction:column;
+      -webkit-backdrop-filter: blur(10px) saturate(120%);backdrop-filter: blur(10px) saturate(120%);
     }
-    @media (prefers-reduced-motion: reduce){ .panel{ transition:none } }
+    .panel.open{transform:translateY(0)}
+    .panel .handle{height:56px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .panel .handle .title{font-weight:700}
+    .panel .body{padding:12px;overflow:auto}
+
+    /* Form layout: move sliders into vertical stack and make them look neat */
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .row{display:flex;gap:8px;align-items:center}
+    textarea#input{
+      width:100%;min-height:140px;resize:vertical;padding:12px;border-radius:10px;border:1px solid var(--glass-border);background:linear-gradient(0deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));color:var(--text);outline:none;box-shadow:none;font-family:inherit;
+      /* fix "черные линии" — force neutral background & no outline rings */
+      background-clip:padding-box;
+      -webkit-box-shadow: none;
+      box-shadow:none;
+    }
+    label{font-size:13px;color:var(--muted)}
+    input[type=range]{-webkit-appearance:none;height:28px;background:transparent;width:100%}
+    select{background:transparent;border-radius:8px;padding:8px;border:1px solid var(--glass-border);color:var(--text)}
+
+    /* Improved range styling */
+    input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(0,0,0,0.05)}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-6px;width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid rgba(255,255,255,0.9);box-shadow:0 4px 10px rgba(0,0,0,0.35)}
+    input[type=range]:focus{outline:none}
+    input[type=range]::-moz-range-track{height:8px;border-radius:999px;background:rgba(255,255,255,0.06)}
+    input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid rgba(255,255,255,0.9)}
+    /* For accessibility, larger hit area on mobile */
+    @media (max-width:700px){ input[type=range]::-webkit-slider-thumb{width:24px;height:24px;margin-top:-8px} }
+
+    /* Responsive adjustments */
+    @media (max-width:700px){
+      .panel{left:6px;right:6px;border-radius:12px}
+      :root{ --btn-size:44px }
+      .open-panel-btn{min-width:96px;padding:6px 8px;font-size:13px}
+    }
+
+    /* reduced motion preference */
+    @media (prefers-reduced-motion: reduce){ .panel{transition:none} .content{transition:none} }
   </style>
 </head>
 <body>
@@ -102,30 +142,34 @@
     </div>
   </div>
 
-  <!-- Toolbar: only 4 buttons -->
+  <!-- Bottom toolbar: only 4 buttons -->
   <div class="toolbar glass" id="toolbar" role="region" aria-label="Панель управления">
     <div class="controls">
       <div class="left">
+        <!-- Start (triangle) -->
         <button id="startBtn" class="btn primary" aria-label="Запустить" title="Запустить">
           <span class="icon" id="playIcon">▶</span>
         </button>
 
-        <button id="pauseBtn" class="btn" aria-label="Пауза" title="Пауза / продолжить">
+        <!-- Pause (tap on content also keeps working) -->
+        <button id="pauseBtn" class="btn outline" aria-label="Пауза" title="Пауза / продолжить">
           <span class="icon" id="pauseIcon">⏸</span>
         </button>
       </div>
 
       <div class="right">
-        <button id="fsBtn" class="btn" aria-label="Полный экран" title="Полный экран">
+        <!-- Fullscreen (two arrows) -->
+        <button id="fsBtn" class="btn outline" aria-label="Полный экран" title="Полный экран">
           <span class="icon">⤢</span>
         </button>
 
-        <button id="openPanelBtn" class="open-panel-btn btn" aria-haspopup="dialog" aria-expanded="false" title="Настройки">Настройки</button>
+        <!-- Settings (smaller label) -->
+        <button id="openPanelBtn" class="open-panel-btn btn outline" aria-haspopup="dialog" aria-expanded="false" title="Настройки">Настройки</button>
       </div>
     </div>
   </div>
 
-  <!-- Slide-up panel -->
+  <!-- Slide-up panel with improved layout (no overlapping buttons) -->
   <div class="panel-wrap" id="panelWrap">
     <div class="panel glass" id="panel" role="dialog" aria-modal="false" aria-label="Настройки телесуфлера">
       <div class="handle">
@@ -137,79 +181,76 @@
           <button id="closePanelBtn" class="btn" aria-label="Закрыть панель">✕</button>
         </div>
       </div>
+      <div class="body" style="padding-bottom:18px">
+        <div class="field">
+          <label for="input">Текст</label>
+          <textarea id="input" placeholder="Вставьте текст сюда"></textarea>
+        </div>
 
-      <div class="body">
-        <div class="form-grid">
-          <div class="field" style="grid-column:1">
-            <label for="input">Текст</label>
-            <textarea id="input" placeholder="Вставьте текст сюда"></textarea>
+        <!-- Sliders stacked vertically — удобнее на мобильном и не ломают строку -->
+        <div class="field">
+          <label for="speed">Скорость (px/с)</label>
+          <input id="speed" type="range" min="10" max="300" value="40" />
+        </div>
+
+        <div class="field">
+          <label for="size">Размер (px)</label>
+          <input id="size" type="range" min="18" max="120" value="48" />
+        </div>
+
+        <div class="row" style="gap:12px;align-items:start;">
+          <div style="flex:1">
+            <label for="theme">Тема</label>
+            <select id="theme" title="Тема оформления">
+              <option value="dark">Тёмная</option>
+              <option value="light">Светлая</option>
+              <option value="sepia">Сепия</option>
+              <option value="navy">Navy</option>
+              <option value="contrast">Высокая контрастность</option>
+            </select>
           </div>
 
-          <div style="grid-column:1 / -1; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-            <div style="flex:1; min-width:220px;">
-              <label for="speed">Скорость (px/с)</label>
-              <input id="speed" type="range" min="10" max="300" value="40" />
-            </div>
+          <div style="width:160px">
+            <label for="fontSelect">Шрифт</label>
+            <select id="fontSelect" title="Выбор шрифта">
+              <option value="Nunito">Nunito (Black)</option>
+              <option value="Manrope">Manrope</option>
+              <option value="Inter">Inter</option>
+            </select>
+          </div>
+        </div>
 
-            <div style="width:160px;">
-              <label for="size">Размер (px)</label>
-              <input id="size" type="range" min="18" max="120" value="48" />
-            </div>
+        <div class="row" style="gap:12px;margin-top:8px;">
+          <div style="flex:1">
+            <label for="alignSelect">Выравнивание</label>
+            <select id="alignSelect" class="align-select" aria-label="Выравнивание текста">
+              <option value="left">Слева</option>
+              <option value="center">По центру</option>
+              <option value="right">Справа</option>
+              <option value="justify">По ширине</option>
+            </select>
           </div>
 
-          <div style="grid-column:1; display:flex; gap:12px;">
-            <div style="flex:1">
-              <label for="theme">Тема</label>
-              <select id="theme" title="Тема оформления">
-                <option value="dark">Тёмная</option>
-                <option value="light">Светлая</option>
-                <option value="sepia">Сепия</option>
-                <option value="navy">Navy</option>
-                <option value="contrast">Высокая контрастность</option>
-              </select>
-            </div>
-
-            <div style="width:160px">
-              <label for="fontSelect">Шрифт</label>
-              <select id="fontSelect" title="Выбор шрифта">
-                <option value="Nunito">Nunito (Black)</option>
-                <option value="Manrope">Manrope</option>
-                <option value="Inter">Inter</option>
-              </select>
-            </div>
+          <div style="width:160px">
+            <label for="uppercaseToggle">Режим</label>
+            <select id="uppercaseToggle" title="Преобразование текста">
+              <option value="none">Обычный</option>
+              <option value="uppercase">Все ЗАГЛАВНЫЕ</option>
+            </select>
           </div>
+        </div>
 
-          <div style="grid-column:1; display:flex; gap:12px; align-items:center;">
-            <div style="flex:1">
-              <label for="alignSelect">Выравнивание</label>
-              <select id="alignSelect" class="align-select" aria-label="Выравнивание текста">
-                <option value="left">Слева</option>
-                <option value="center">По центру</option>
-                <option value="right">Справа</option>
-                <option value="justify">По ширине</option>
-              </select>
-            </div>
-
-            <div style="width:160px">
-              <label for="uppercaseToggle">Режим</label>
-              <select id="uppercaseToggle" title="Преобразование текста">
-                <option value="none">Обычный</option>
-                <option value="uppercase">Все ЗАГЛАВНЫЕ</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="grid-column:1 / -1; display:flex; gap:8px; justify-content:flex-end; margin-top:6px;">
-            <button id="panelStartBtn" class="btn primary">Запустить</button>
-            <button id="panelCloseAction" class="btn">Закрыть</button>
-          </div>
+        <!-- Buttons: spacing fixed so they never overlap -->
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+          <button id="panelStartBtn" class="btn primary">Запустить</button>
+          <button id="panelCloseAction" class="btn">Закрыть</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Restore fullscreen helper -->
-  <button id="restoreBtn" class="btn" style="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--control-height) + 26px);z-index:200;display:none">Закончить — показать интерфейс</button>
+  <!-- Small restore button (short label, won't overflow) -->
+  <button id="restoreBtn" class="btn" style="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--control-height) + 12px);z-index:200;display:none;padding:8px 12px;font-size:14px">Выйти</button>
 
   <script>
     // Elements
@@ -224,7 +265,7 @@
     const fsBtn = document.getElementById('fsBtn');
     const restoreBtn = document.getElementById('restoreBtn');
 
-    // Controls inside panel
+    // Teleprompter controls inside panel
     const input = document.getElementById('input');
     const content = document.getElementById('content');
     const speedRange = document.getElementById('speed');
@@ -245,9 +286,10 @@
     let currentY = 0;
     let lastTimestamp = null;
 
+    // helpers
     const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 
-    // Control height observers (keeps safe area)
+    // Update CSS vars for control heights using ResizeObserver
     function setControlHeight(h){ document.documentElement.style.setProperty('--control-height', Math.ceil(h) + 'px'); }
     const roToolbar = new ResizeObserver(entries=>{
       const h = entries[0].contentRect.height || 64;
@@ -255,6 +297,7 @@
       if(!panel.classList.contains('open')) setControlHeight(h);
     });
     roToolbar.observe(toolbar);
+
     const roPanel = new ResizeObserver(entries=>{
       const h = entries[0].contentRect.height || 0;
       document.documentElement.style.setProperty('--panel-height', Math.ceil(h) + 'px');
@@ -262,18 +305,51 @@
     });
     roPanel.observe(panel);
 
-    // Panel toggles
-    function openPanel(){ panel.classList.add('open'); openPanelBtn.setAttribute('aria-expanded','true'); setTimeout(()=>{ setControlHeight(panel.getBoundingClientRect().height + 12); },80); }
-    function closePanel(){ panel.classList.remove('open'); openPanelBtn.setAttribute('aria-expanded','false'); setTimeout(()=>{ setControlHeight(toolbar.getBoundingClientRect().height || 64); },80); }
-    openPanelBtn.addEventListener('click', ()=> panel.classList.contains('open') ? closePanel() : openPanel());
+    // Panel open/close helpers
+    function openPanel(){
+      panel.classList.add('open');
+      openPanelBtn.setAttribute('aria-expanded','true');
+      setTimeout(()=>{ const h = panel.getBoundingClientRect().height || 0; setControlHeight(h + 12); }, 80);
+    }
+    function closePanel(){
+      panel.classList.remove('open');
+      openPanelBtn.setAttribute('aria-expanded','false');
+      const th = toolbar.getBoundingClientRect().height || 64;
+      setTimeout(()=>setControlHeight(th), 80);
+    }
+    openPanelBtn.addEventListener('click', ()=>{ if(panel.classList.contains('open')) closePanel(); else openPanel(); });
     closePanelBtn.addEventListener('click', closePanel);
     panelCloseAction.addEventListener('click', closePanel);
 
-    // Theme/font/alignment
-    function applyTheme(theme){ document.documentElement.setAttribute('data-theme', theme); sessionStorage.setItem('teleprompter_theme', theme); themeSelect.value = theme; }
-    function applyFont(font){ const map = { Nunito: "'Nunito', sans-serif", Manrope: "'Manrope', sans-serif", Inter: "'Inter', sans-serif" }; const weightMap = { Nunito:'900', Manrope:'700', Inter:'700' }; content.style.fontFamily = map[font] || map.Nunito; content.style.fontWeight = weightMap[font] || '700'; sessionStorage.setItem('teleprompter_font', font); fontSelect.value = font; }
-    function applyAlignment(a){ if(a === 'justify') content.style.textAlign = 'justify'; else content.style.textAlign = a; alignSelect.value = a; sessionStorage.setItem('teleprompter_align', a); adjustJustifyHeuristic(); }
-    function applyUppercase(mode){ content.style.textTransform = (mode === 'uppercase') ? 'uppercase' : 'none'; uppercaseToggle.value = mode; sessionStorage.setItem('teleprompter_case', mode); }
+    // Apply theme & font & alignment & uppercase
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme);
+      sessionStorage.setItem('teleprompter_theme', theme);
+      themeSelect.value = theme;
+      // Ensure borders remain visible in light/sepiа: tweak --glass-border alpha if needed
+      // But because we rely on var(--glass-border) being provided by theme, nothing else needed.
+    }
+    function applyFont(font){
+      const map = { Nunito: "'Nunito', sans-serif", Manrope: "'Manrope', sans-serif", Inter: "'Inter', sans-serif" };
+      const weightMap = { Nunito: '900', Manrope: '700', Inter: '700' };
+      content.style.fontFamily = map[font] || map.Nunito;
+      content.style.fontWeight = weightMap[font] || '700';
+      sessionStorage.setItem('teleprompter_font', font);
+      fontSelect.value = font;
+    }
+    function applyAlignment(a){
+      if(a === 'justify') content.style.textAlign = 'justify';
+      else content.style.textAlign = a;
+      alignSelect.value = a;
+      sessionStorage.setItem('teleprompter_align', a);
+      requestAnimationFrame(()=>{ adjustJustifyHeuristic(); });
+    }
+    function applyUppercase(mode){
+      if(mode === 'uppercase') content.style.textTransform = 'uppercase';
+      else content.style.textTransform = 'none';
+      uppercaseToggle.value = mode;
+      sessionStorage.setItem('teleprompter_case', mode);
+    }
 
     themeSelect.addEventListener('change', e=> applyTheme(e.target.value));
     fontSelect.addEventListener('change', e=> applyFont(e.target.value));
@@ -295,14 +371,14 @@
     sizeRange.addEventListener('input', renderContent);
     speedRange.addEventListener('input', ()=> { recalcSizes(); });
 
-    // Calculate start/end positions (start below viewport as before)
     function recalcSizes(){
       const vh = document.getElementById('viewport').clientHeight || window.innerHeight;
       const ch = content.scrollHeight || 0;
-      startY = vh + 24;                 // start: below viewport (as in original)
-      endY = -ch - 24;                  // finish: fully scrolled past top
+      // Keep previous behavior: start below viewport
+      startY = vh + 24;
+      endY = -ch - 24;
+      // Default (idle) position: centered vertically
       if(!running && !paused){
-        // default view: center content vertically (natural state)
         const centerY = Math.round((vh - content.clientHeight) / 2);
         currentY = centerY;
         content.style.transform = `translateY(${currentY}px)`;
@@ -312,7 +388,7 @@
       }
     }
 
-    // Heuristic to avoid ugly justify stretching (keeps layout tidy)
+    // Heuristic for justify (avoid weird stretching)
     function adjustJustifyHeuristic(){
       if(content.style.textAlign !== 'justify') return;
       const cw = content.clientWidth || 1;
@@ -326,22 +402,22 @@
       }
     }
 
-    // Scrolling RAF loop (delta-time based)
+    // Scrolling logic
     function startScroll(){
       renderContent();
       recalcSizes();
       if(!content.textContent) return;
 
-      // start from below viewport (original behavior)
       if(!paused){
         currentY = startY;
-      }
+      } // else resume from paused position
+
       running = true;
       paused = false;
       finished = false;
       lastTimestamp = null;
 
-      // close settings while running
+      // Ensure panel closed while running
       closePanel();
       disableManualHandlers();
 
@@ -350,11 +426,10 @@
         if(lastTimestamp === null) lastTimestamp = ts;
         const dt = (ts - lastTimestamp) / 1000;
         lastTimestamp = ts;
-        const speed = Number(speedRange.value) || 40; // px per second
+        const speed = Number(speedRange.value) || 40;
         currentY -= speed * dt;
         content.style.transform = `translateY(${currentY}px)`;
         if(currentY <= endY){
-          // finished scrolling
           running = false;
           paused = true;
           finished = true;
@@ -362,7 +437,7 @@
           content.style.transform = `translateY(${currentY}px)`;
           if(rafId) cancelAnimationFrame(rafId);
           rafId = null;
-          // smooth return to center, then enable manual handlers automatically
+          // Smoothly return to center then enable manual handling automatically
           smoothReturnToCenter(800);
           return;
         }
@@ -383,10 +458,9 @@
 
     function smoothReturnToCenter(duration = 800){
       const vh = document.getElementById('viewport').clientHeight || window.innerHeight;
-      // center position so that content is vertically centered
       const centerY = Math.round((vh - content.clientHeight) / 2);
       const from = currentY;
-      const to = clamp(centerY, endY, startY); // clamp into valid range
+      const to = clamp(centerY, endY, startY);
       const start = performance.now();
       function anim(t){
         const p = Math.min(1, (t - start) / duration);
@@ -397,42 +471,36 @@
         else {
           currentY = to;
           content.style.transform = `translateY(${currentY}px)`;
-          // after returning to center, enable manual scroll handlers automatically
           enableManualHandlers();
         }
       }
       requestAnimationFrame(anim);
     }
 
-    // Manual handlers (wheel & touch) — activated only after finish and center return
+    // Manual handlers (only active after finish and center return)
     function enableManualHandlers(){
       if(manualMode) return;
       manualMode = true;
-      // allow wheel/touch to control content
-      window.addEventListener('wheel', manualWheel, { passive:false });
-      window.addEventListener('touchstart', onTouchStart, { passive:false });
-      window.addEventListener('touchmove', onTouchMove, { passive:false });
-      window.addEventListener('touchend', onTouchEnd, { passive:false });
+      window.addEventListener('wheel', manualWheel, {passive:false});
+      window.addEventListener('touchstart', onTouchStart, {passive:false});
+      window.addEventListener('touchmove', onTouchMove, {passive:false});
+      window.addEventListener('touchend', onTouchEnd, {passive:false});
     }
     function disableManualHandlers(){
-      if(!manualMode && !finished) return;
+      if(!manualMode) return;
       manualMode = false;
       window.removeEventListener('wheel', manualWheel);
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
     }
-
     function manualWheel(e){
       if(!manualMode) return;
       e.preventDefault();
-      // positive deltaY -> move content up (decrease currentY)
       currentY -= e.deltaY;
       currentY = clamp(currentY, endY, startY);
       content.style.transform = `translateY(${currentY}px)`;
     }
-
-    // touch pan (simple)
     let tsY = 0;
     function onTouchStart(e){ if(!manualMode) return; tsY = e.touches[0].clientY; }
     function onTouchMove(e){
@@ -440,14 +508,14 @@
       const y = e.touches[0].clientY;
       const dy = y - tsY;
       tsY = y;
-      currentY += dy; // finger moves down => content moves down
+      currentY += dy;
       currentY = clamp(currentY, endY, startY);
       content.style.transform = `translateY(${currentY}px)`;
       e.preventDefault();
     }
     function onTouchEnd(e){ /* noop */ }
 
-    // Toolbar button bindings
+    // Button bindings
     startBtn.addEventListener('click', ()=>{ if(!running) startScroll(); });
     panelStartBtn.addEventListener('click', ()=> startScroll());
 
@@ -457,14 +525,14 @@
       else startScroll();
     });
 
-    // Pause/resume by tapping content (as you liked)
+    // Keep tap-on-content pause behaviour
     content.addEventListener('click', ()=>{
       if(running) pauseScroll();
       else if(paused && !finished) startScroll();
       else startScroll();
     });
 
-    // Fullscreen (two-arrows glyph used)
+    // Fullscreen toggle (works on most browsers; best-effort on iOS)
     async function toggleFullscreen(){
       try{
         if(!document.fullscreenElement && !document.webkitFullscreenElement){
@@ -477,27 +545,32 @@
           else if(document.webkitExitFullscreen) await document.webkitExitFullscreen();
           restoreBtn.style.display = 'none';
         }
-      }catch(e){ console.warn('Fullscreen failed', e); }
+      }catch(e){
+        console.warn('Fullscreen API issue', e);
+      }
     }
     fsBtn.addEventListener('click', toggleFullscreen);
     restoreBtn.addEventListener('click', async ()=>{
-      try{ if(document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen(); else if(document.webkitFullscreenElement && document.webkitExitFullscreen) await document.webkitExitFullscreen(); }catch(e){}
+      try{
+        if(document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
+        else if(document.webkitFullscreenElement && document.webkitExitFullscreen) await document.webkitExitFullscreen();
+      }catch(e){}
       restoreBtn.style.display = 'none';
       closePanel();
     });
 
-    // Keyboard shortcuts: Space = pause/start, f = fullscreen, Esc closes panel/fullscreen
+    // Keyboard shortcuts
     window.addEventListener('keydown', e=>{
       if(e.code === 'Space'){ e.preventDefault(); if(running) pauseScroll(); else if(paused && !finished) startScroll(); else startScroll(); }
-      if(e.key && e.key.toLowerCase() === 'f'){ e.preventDefault(); toggleFullscreen(); }
+      if(e.key && e.key.toLowerCase()==='f'){ e.preventDefault(); toggleFullscreen(); }
       if(e.key === 'Escape'){ if(panel.classList.contains('open')) closePanel(); if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }
     });
 
     // Resize handling
-    let resizeTimer = null;
-    window.addEventListener('resize', ()=>{ clearTimeout(resizeTimer); resizeTimer = setTimeout(()=>{ renderContent(); recalcSizes(); setControlHeight(toolbar.getBoundingClientRect().height || 64); }, 120); });
+    let resizeTimeout = null;
+    window.addEventListener('resize', ()=>{ clearTimeout(resizeTimeout); resizeTimeout = setTimeout(()=>{ renderContent(); recalcSizes(); const th = toolbar.getBoundingClientRect().height || 64; if(!panel.classList.contains('open')) setControlHeight(th); else setControlHeight(panel.getBoundingClientRect().height + 12); }, 140); });
 
-    // Init saved settings
+    // Init: load saved settings and render
     window.addEventListener('load', ()=>{
       const savedTheme = sessionStorage.getItem('teleprompter_theme') || 'dark';
       const savedFont = sessionStorage.getItem('teleprompter_font') || 'Nunito';
@@ -508,11 +581,12 @@
       applyAlignment(savedAlign);
       applyUppercase(savedCase);
       renderContent();
-      if(window.innerWidth <= 700) closePanel();
-      setTimeout(()=> setControlHeight(toolbar.getBoundingClientRect().height || 64), 80);
+      if(window.innerWidth <= 700){ closePanel(); }
+      const th = toolbar.getBoundingClientRect().height || 64;
+      setControlHeight(th);
     });
 
-    // Prevent controls from interfering with dragging
+    // Prevent accidental selection during control interactions
     ['mousedown','touchstart'].forEach(ev=> {
       document.querySelectorAll('.btn, input, select, textarea').forEach(el => {
         el.addEventListener(ev, (e)=> e.stopPropagation());
