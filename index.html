@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Телесуфлёр — панель управления (редизайн v2)</title>
-  <!-- Fonts -->
+  <title>Teleprompter🎄🌌</title>
+
+  <!-- Fonts (same as original) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&family=Inter:wght@700;900&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
@@ -21,11 +22,14 @@
       --glass-bg: rgba(255,255,255,0.06);
       --glass-border: rgba(255,255,255,0.09);
       --glass-shadow: 0 8px 28px rgba(0,0,0,0.35);
+      --btn-size:44px;
+      --btn-radius:10px;
+      --transition-fast: 220ms cubic-bezier(.2,.9,.2,1);
     }
 
     /* theme variants */
     :root[data-theme='dark']{
-      --bg:#0f1113; --text:#dfefff; --accent:#6fb3ff; --muted:rgba(255,255,255,0.58);
+      --bg:#0B0D0F; --text:#f7f7f7; --accent:#6fb3ff; --muted:rgba(255,255,255,0.58);
       --glass-bg: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.09);
     }
     :root[data-theme='light']{
@@ -37,7 +41,7 @@
       --glass-bg: rgba(255,255,255,0.7); --glass-border: rgba(0,0,0,0.04);
     }
     :root[data-theme='navy']{
-      --bg:#001f3f; --text:#ffffff; --accent:#6fb3ff; --muted:rgba(255,255,255,0.7);
+      --bg:#0F1C39; --text:#e4e4e4; --accent:#6fb3ff; --muted:rgba(255,255,255,0.7);
       --glass-bg: rgba(255,255,255,0.03); --glass-border: rgba(255,255,255,0.06);
     }
     :root[data-theme='contrast']{
@@ -45,66 +49,126 @@
       --glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08);
     }
 
+    /* Base */
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial; -webkit-font-smoothing:antialiased}
     *,*:before,*:after{box-sizing:border-box}
+    body{transition:background var(--transition-fast), color var(--transition-fast)}
 
     .glass{
       background:var(--glass-bg);
       border:1px solid var(--glass-border);
-      -webkit-backdrop-filter: blur(10px) saturate(120%);
-      backdrop-filter: blur(10px) saturate(120%);
+      -webkit-backdrop-filter: blur(8px) saturate(120%);
+      backdrop-filter: blur(8px) saturate(120%);
       box-shadow: var(--glass-shadow);
       color:var(--text);
+      transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
 
-    /* Teleprompter viewport: top/bottom padding uses --control-height to avoid overlap */
-    .viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:calc(20px + env(safe-area-inset-top)) 6vw calc(var(--control-height) + 20px + env(safe-area-inset-bottom)) 6vw;z-index:1}
+    /* Teleprompter viewport */
+    .viewport{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      /* overflow hidden during auto-scroll; toggled in script when manual mode enabled */
+      overflow:hidden;
+      padding:calc(20px + env(safe-area-inset-top)) 6vw calc(var(--control-height) + 20px + env(safe-area-inset-bottom)) 6vw;
+      z-index:1;
+      -webkit-user-select:none;
+      user-select:none;
+      touch-action:manipulation;
+    }
     .frame{width:100%;max-width:1200px;height:100%;display:flex;align-items:flex-start;justify-content:center}
-    .content{width:100%;max-width:980px;text-align:center;line-height:1.45;font-size:clamp(20px,4vw + 14px,64px);white-space:pre-wrap;hyphens:auto;padding-bottom:8vh;font-weight:900;transition:transform 120ms linear}
+    .content{
+      width:100%;
+      max-width:980px;
+      text-align:center;
+      line-height:1.45;
+      font-size:clamp(20px,4vw + 14px,64px);
+      white-space:pre-wrap;
+      hyphens:auto;
+      padding-bottom:8vh;
+      font-weight:900;
+      transition:transform 120ms linear, opacity 200ms linear;
+      will-change:transform;
+      -webkit-font-smoothing:antialiased;
+      overflow-wrap:break-word;
+      word-break:break-word;
+      -webkit-hyphens:auto;
+      hyphens:auto;
+      text-align-last:left; /* helpful for justify */
+      text-justify:inter-word;
+    }
     .content.hidden{opacity:0}
 
-    /* Bottom toolbar (primary controls) — minimal and compact */
+    /* Bottom toolbar */
     .toolbar{
-      position:fixed;left:12px;right:12px;bottom:12px;z-index:120;height:var(--toolbar-height);min-height:48px;border-radius:12px;display:flex;align-items:center;gap:8px;padding:8px 10px;
+      position:fixed;
+      left:12px;
+      right:12px;
+      bottom:12px;
+      z-index:120;
+      height:var(--toolbar-height);
+      min-height:48px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 12px;
+      box-sizing:border-box;
+      align-items:center;
     }
     .toolbar.glass{background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(8px);box-shadow:var(--glass-shadow)}
 
     .toolbar .left{display:flex;gap:8px;align-items:center}
+    .toolbar .center{display:flex;gap:8px;align-items:center;margin:0 auto}
     .toolbar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
-    .btn{background:transparent;border:0;color:var(--text);padding:8px;border-radius:10px;cursor:pointer;font-size:15px}
-    .btn.primary{background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06)}
-    .icon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px}
 
-    /* Floating action: open panel */
-    .open-panel-btn{padding:10px 12px;font-weight:700}
+    .btn{
+      background:transparent;border:0;color:var(--text);
+      width:var(--btn-size);height:var(--btn-size);
+      padding:6px;border-radius:var(--btn-radius);
+      cursor:pointer;font-size:15px;display:inline-flex;align-items:center;justify-content:center;
+      transition:background 140ms, transform 120ms;
+      box-sizing:border-box;
+    }
+    .btn:active{transform:scale(0.98)}
+    .btn.primary{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04)}
+    .btn.small{width:36px;height:36px;border-radius:8px;padding:6px}
+    .btn.icon-only{background:transparent;border-radius:8px}
 
-    /* Slide-up settings panel (advanced controls). Hidden by default; slides from bottom. */
+    .btn .icon{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;overflow:visible}
+    .btn svg{width:100%;height:100%;display:block}
+
+    /* Open panel button (wider) */
+    .open-panel-btn{min-width:120px;height:var(--btn-size);padding:10px 12px;font-weight:700;border-radius:12px}
+
+    /* Controls panel */
     .panel-wrap{position:fixed;left:8px;right:8px;bottom:calc(12px + var(--toolbar-height));z-index:150;display:block;pointer-events:none}
     .panel{
       width:100%;max-width:980px;margin:0 auto;border-radius:14px 14px 8px 8px;overflow:hidden;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:0 30px 80px rgba(0,0,0,0.6);transform:translateY(110%);transition:transform 320ms cubic-bezier(.2,.9,.2,1);pointer-events:auto;max-height:80vh;display:flex;flex-direction:column;
       -webkit-backdrop-filter: blur(10px) saturate(120%);backdrop-filter: blur(10px) saturate(120%);
     }
     .panel.open{transform:translateY(0)}
-    .panel .handle{height:44px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .panel .handle{height:56px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.02)}
     .panel .handle .title{font-weight:700}
     .panel .body{padding:12px;overflow:auto}
 
-    /* Controls layout inside panel */
     .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
     .row{display:flex;gap:8px;align-items:center}
-    textarea#input{width:100%;min-height:120px;resize:vertical;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.02);color:var(--text);outline:1px solid rgba(255,255,255,0.03)}
+    textarea#input{width:100%;min-height:120px;resize:vertical;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.02);color:var(--text);outline:1px solid rgba(255,255,255,0.03);font-family:inherit}
     label{font-size:13px;color:var(--muted)}
-    input[type=range]{-webkit-appearance:none;height:28px;background:transparent}
+    input[type=range]{-webkit-appearance:none;height:28px;background:transparent;width:100%}
     select{background:transparent;border-radius:8px;padding:8px;border:1px solid rgba(255,255,255,0.03);color:var(--text)}
 
-    /* Alignment controls inline */
     .align-select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
 
     /* Accessibility and responsive tweaks */
     @media (max-width:700px){
       .panel{left:6px;right:6px;border-radius:12px}
       .toolbar{left:10px;right:10px;padding:6px 8px}
-      .icon{width:36px;height:36px}
+      :root{ --btn-size:42px }
     }
 
     /* Reduced motion */
@@ -113,25 +177,77 @@
 </head>
 <body>
 
-  <div class="viewport" id="viewport">
+  <div class="viewport" id="viewport" aria-live="polite">
     <div class="frame">
-      <div id="content" class="content" tabindex="-1" aria-live="polite">Вставьте текст или нажмите кнопку настроек внизу, чтобы вписать текст и параметры.</div>
+      <div id="content" class="content" tabindex="-1" aria-label="Текст телесуфлёра">Вставьте текст или нажмите кнопку настроек внизу, чтобы вписать текст и параметры.</div>
     </div>
   </div>
 
-  <!-- Bottom toolbar: always visible, compact -->
+  <!-- Bottom toolbar -->
   <div class="toolbar glass" id="toolbar" role="region" aria-label="Панель управления">
     <div class="left">
-      <button id="startBtn" class="btn primary" aria-label="Запустить"><span class="icon">▶</span></button>
-      <button id="pauseBtn" class="btn" aria-label="Пауза"><span class="icon">⏸</span></button>
+      <!-- Play -->
+      <button id="startBtn" class="btn primary" aria-label="Запустить" title="Запустить">
+        <span class="icon" id="iconPlay" aria-hidden="true">
+          <!-- SVG Play -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"></path></svg>
+        </span>
+      </button>
+
+      <!-- Pause -->
+      <button id="pauseBtn" class="btn" aria-label="Пауза" title="Пауза / продолжить">
+        <span class="icon" id="iconPause" aria-hidden="true">
+          <!-- SVG Pause -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </span>
+      </button>
+
+      <!-- Stop (reset) -->
+      <button id="stopBtn" class="btn" aria-label="Стоп / Сброс" title="Стоп — сбросить к началу">
+        <span class="icon" id="iconStop" aria-hidden="true">
+          <!-- SVG Stop (square) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>
+        </span>
+      </button>
+
+      <!-- Rewind: плавное возвращение -->
+      <button id="rewindBtn" class="btn" aria-label="Вернуть к началу" title="Плавно вернуть к началу">
+        <span class="icon" aria-hidden="true">
+          <!-- SVG Rewind -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19V5l-9 7 9 7zM22 19V5l-9 7 9 7z"></path></svg>
+        </span>
+      </button>
     </div>
+
+    <div class="center" id="centerControls">
+      <!-- Manual mode toggle -->
+      <button id="manualBtn" class="btn small" aria-pressed="false" title="Режим ручной прокрутки (после окончания)">
+        <span class="icon" aria-hidden="true">
+          <!-- SVG Hand / drag -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12v4a4 4 0 008 0V8"></path><path d="M12 2v6"></path></svg>
+        </span>
+      </button>
+
+      <!-- Speed display and +/- -->
+      <div style="display:flex;gap:6px;align-items:center">
+        <button id="speedDown" class="btn icon-only small" title="Медленнее">−</button>
+        <div id="speedLabel" style="min-width:44px;text-align:center;font-weight:700;font-size:14px;">40</div>
+        <button id="speedUp" class="btn icon-only small" title="Быстрее">+</button>
+      </div>
+    </div>
+
     <div class="right">
-      <button id="fsBtn" class="btn" aria-label="Полный экран">⤢</button>
-      <button id="openPanelBtn" class="btn open-panel-btn" aria-haspopup="dialog" aria-expanded="false">Настройки</button>
+      <button id="fsBtn" class="btn" aria-label="Полный экран" title="Полный экран">
+        <span class="icon" aria-hidden="true">
+          <!-- SVG fullscreen -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M21 8v3a2 2 0 0 1-2 2h-3"></path></svg>
+        </span>
+      </button>
+      <button id="openPanelBtn" class="btn open-panel-btn" aria-haspopup="dialog" aria-expanded="false" title="Настройки">Настройки</button>
     </div>
   </div>
 
-  <!-- Slide-up panel with advanced controls -->
+  <!-- Slide-up panel -->
   <div class="panel-wrap" id="panelWrap">
     <div class="panel glass" id="panel" role="dialog" aria-modal="false" aria-label="Настройки телесуфлера">
       <div class="handle">
@@ -221,8 +337,14 @@
     const panelCloseAction = document.getElementById('panelCloseAction');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
     const fsBtn = document.getElementById('fsBtn');
     const restoreBtn = document.getElementById('restoreBtn');
+    const rewindBtn = document.getElementById('rewindBtn');
+    const manualBtn = document.getElementById('manualBtn');
+    const speedUp = document.getElementById('speedUp');
+    const speedDown = document.getElementById('speedDown');
+    const speedLabel = document.getElementById('speedLabel');
 
     // Teleprompter controls inside panel
     const input = document.getElementById('input');
@@ -234,16 +356,23 @@
     const alignSelect = document.getElementById('alignSelect');
     const uppercaseToggle = document.getElementById('uppercaseToggle');
 
-    // Scrolling state
+    // State
     let rafId = null;
     let running = false;
     let paused = false;
+    let finished = false;
+    let manualMode = false;
     let startY = 0;
     let endY = 0;
     let currentY = 0;
     let lastTimestamp = null;
+    let savedTheme = null;
 
-    // Update CSS vars for control heights using ResizeObserver — ensures viewport padding is correct
+    // Safe helpers
+    const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Update CSS vars for control heights using ResizeObserver
     function setControlHeight(h){ document.documentElement.style.setProperty('--control-height', Math.ceil(h) + 'px'); }
     const roToolbar = new ResizeObserver(entries=>{
       const h = entries[0].contentRect.height || 64;
@@ -261,29 +390,28 @@
     });
     roPanel.observe(panel);
 
-    // Panel open/close helpers
+    // Panel open/close
     function openPanel(){
       panel.classList.add('open');
       openPanelBtn.setAttribute('aria-expanded','true');
-      const h = panel.getBoundingClientRect().height || 0;
-      setControlHeight(h + 12);
+      setTimeout(()=>{ const h = panel.getBoundingClientRect().height || 0; setControlHeight(h + 12); }, 80);
     }
     function closePanel(){
       panel.classList.remove('open');
       openPanelBtn.setAttribute('aria-expanded','false');
       const th = toolbar.getBoundingClientRect().height || 64;
-      setControlHeight(th);
+      setTimeout(()=>setControlHeight(th), 80);
     }
-
     openPanelBtn.addEventListener('click', ()=>{ if(panel.classList.contains('open')) closePanel(); else openPanel(); });
     closePanelBtn.addEventListener('click', closePanel);
     panelCloseAction.addEventListener('click', closePanel);
 
-    // Apply theme & font & alignment & uppercase
+    // Theme/font/alignment/uppercase handlers
     function applyTheme(theme){
       document.documentElement.setAttribute('data-theme', theme);
       sessionStorage.setItem('teleprompter_theme', theme);
       themeSelect.value = theme;
+      // smooth background transitions already handled by CSS transitions
     }
     function applyFont(font){
       const map = { Nunito: "'Nunito', sans-serif", Manrope: "'Manrope', sans-serif", Inter: "'Inter', sans-serif" };
@@ -294,9 +422,16 @@
       fontSelect.value = font;
     }
     function applyAlignment(a){
-      content.style.textAlign = (a === 'justify') ? 'justify' : a;
+      // apply but guard justify stretching by using text-align-last and hyphens in CSS
+      if(a === 'justify'){
+        content.style.textAlign = 'justify';
+      } else {
+        content.style.textAlign = a;
+      }
       alignSelect.value = a;
       sessionStorage.setItem('teleprompter_align', a);
+      // On small widths or single-line situations, fallback to center/left to avoid ugly stretch
+      requestAnimationFrame(()=>{ adjustJustifyHeuristic(); });
     }
     function applyUppercase(mode){
       if(mode === 'uppercase') content.style.textTransform = 'uppercase';
@@ -310,7 +445,7 @@
     alignSelect.addEventListener('change', e=> applyAlignment(e.target.value));
     uppercaseToggle.addEventListener('change', e=> applyUppercase(e.target.value));
 
-    // Render content (applies uppercase conversion before rendering)
+    // Render content
     function renderContent(){
       let txt = input.value || '';
       const mode = sessionStorage.getItem('teleprompter_case') || uppercaseToggle.value || 'none';
@@ -323,47 +458,64 @@
     }
     input.addEventListener('input', renderContent);
     sizeRange.addEventListener('input', renderContent);
-    speedRange.addEventListener('input', ()=> {
-      // speed changes are applied on the fly in the RAF loop; keep a recalculation to update endY if needed
-      recalcSizes();
-    });
+    speedRange.addEventListener('input', ()=> { speedLabel.textContent = speedRange.value; recalcSizes(); });
 
     function recalcSizes(){
+      // compute start/end/current based on viewport and content height
       const vh = document.getElementById('viewport').clientHeight;
       const ch = content.scrollHeight || 0;
       startY = vh + 24;
       endY = -ch - 24;
-      // If we are not running, set currentY so start begins at correct position
+      // If not running and not paused, place at start
       if(!running && !paused){
         currentY = startY;
+        content.style.transform = `translateY(${currentY}px)`;
+      } else {
+        // clamp currentY between endY and startY
+        currentY = clamp(currentY, endY, startY);
         content.style.transform = `translateY(${currentY}px)`;
       }
     }
 
-    // Scrolling logic (with delta-time based RAF and pause/resume)
+    // Heuristic to prevent ugly justify stretching:
+    function adjustJustifyHeuristic(){
+      if(content.style.textAlign !== 'justify') return;
+      // if content width is small relative to font size OR very short lines -> fallback to center
+      const cw = content.clientWidth || 1;
+      const fs = parseFloat(getComputedStyle(content).fontSize) || 16;
+      const avgCharsPerLine = cw / (fs * 0.56); // heuristic
+      const lineCount = Math.max(1, Math.round(content.scrollHeight / (fs * 1.45)));
+      if(avgCharsPerLine < 25 || lineCount < 3){
+        // avoid full justification for very short lines/small columns
+        content.style.textAlign = 'left';
+      } else {
+        content.style.textAlign = 'justify';
+      }
+    }
+
+    // Scrolling logic with RAF and proper pause/resume
     function startScroll(){
-      // if no content — do nothing
       renderContent();
       recalcSizes();
       if(!content.textContent) return;
 
-      // If resuming from pause, keep currentY; otherwise start from startY
       if(!paused){
         currentY = startY;
-      } // else currentY already has paused position
+      } // if paused, resume from currentY
 
       running = true;
       paused = false;
+      finished = false;
       lastTimestamp = null;
 
-      // ensure UI panel closed
+      // ensure panel closed and manual mode off during auto scroll
       closePanel();
+      disableManualMode();
 
-      // RAF step — use dt so speed changes mid-scroll apply immediately
       function step(ts){
         if(!running) return;
         if(lastTimestamp === null) lastTimestamp = ts;
-        const dt = (ts - lastTimestamp) / 1000; // seconds since last frame
+        const dt = (ts - lastTimestamp) / 1000;
         lastTimestamp = ts;
         const speed = Number(speedRange.value) || 40; // px per second
         currentY -= speed * dt;
@@ -372,14 +524,18 @@
           // finished
           running = false;
           paused = true;
-          cancelAnimationFrame(rafId);
+          finished = true;
+          currentY = endY;
+          content.style.transform = `translateY(${currentY}px)`;
+          if(rafId) cancelAnimationFrame(rafId);
           rafId = null;
+          // Allow manual scrolling after finish automatically (user requested ability to "листать")
+          enableManualMode();
           return;
         }
         rafId = requestAnimationFrame(step);
       }
 
-      // start RAF loop
       if(rafId) cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(step);
     }
@@ -390,47 +546,164 @@
       paused = true;
       if(rafId) cancelAnimationFrame(rafId);
       rafId = null;
-      // currentY remains at last position (transform)
     }
 
-    // Button bindings (toolbar + panel)
-    startBtn.addEventListener('click', ()=>{
-      startScroll();
-    });
-    panelStartBtn.addEventListener('click', ()=>{
-      startScroll();
-    });
+    function stopAndReset(){
+      running = false;
+      paused = false;
+      finished = false;
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      currentY = startY;
+      content.style.transform = `translateY(${currentY}px)`;
+      disableManualMode();
+    }
+
+    function smoothReturnToStart(duration = 800){
+      // animate currentY -> startY
+      const from = currentY;
+      const to = startY;
+      const start = performance.now();
+      running = false; paused = true; finished = false;
+      if(rafId) cancelAnimationFrame(rafId);
+      function anim(t){
+        const p = Math.min(1, (t - start) / duration);
+        const ease = 1 - Math.pow(1 - p, 3);
+        currentY = from + (to - from) * ease;
+        content.style.transform = `translateY(${currentY}px)`;
+        if(p < 1) requestAnimationFrame(anim);
+        else { currentY = to; content.style.transform = `translateY(${currentY}px)`; disableManualMode(); }
+      }
+      requestAnimationFrame(anim);
+    }
+
+    // Manual mode: wheel and touch to scroll through the content by changing currentY
+    function enableManualMode(){
+      if(manualMode) return;
+      manualMode = true;
+      manualBtn.setAttribute('aria-pressed','true');
+      manualBtn.classList.add('active');
+      // allow viewport scrolling via wheel/touch to adjust transform
+      document.getElementById('viewport').style.overflow = 'auto'; // this helps in some browsers for touch
+      // add wheel listener
+      window.addEventListener('wheel', manualWheel, {passive:false});
+      // touch handlers
+      window.addEventListener('touchstart', onTouchStart, {passive:false});
+      window.addEventListener('touchmove', onTouchMove, {passive:false});
+      window.addEventListener('touchend', onTouchEnd, {passive:false});
+    }
+    function disableManualMode(){
+      if(!manualMode) return;
+      manualMode = false;
+      manualBtn.setAttribute('aria-pressed','false');
+      manualBtn.classList.remove('active');
+      document.getElementById('viewport').style.overflow = 'hidden';
+      window.removeEventListener('wheel', manualWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    }
+
+    function manualWheel(e){
+      if(!manualMode && !finished) return;
+      // prevent default page scroll
+      e.preventDefault();
+      // deltaY positive -> user scrolls down -> we should move content up (decrease currentY)
+      currentY -= e.deltaY;
+      currentY = clamp(currentY, endY, startY);
+      content.style.transform = `translateY(${currentY}px)`;
+    }
+
+    // touch pan
+    let touchStartY = 0;
+    function onTouchStart(e){
+      if(!manualMode && !finished) return;
+      touchStartY = e.touches[0].clientY;
+    }
+    function onTouchMove(e){
+      if(!manualMode && !finished) return;
+      const y = e.touches[0].clientY;
+      const dy = y - touchStartY;
+      touchStartY = y;
+      currentY += dy; // finger down (positive dy) moves content down
+      currentY = clamp(currentY, endY, startY);
+      content.style.transform = `translateY(${currentY}px)`;
+      e.preventDefault();
+    }
+    function onTouchEnd(e){ /* noop */ }
+
+    // Button bindings
+    startBtn.addEventListener('click', ()=>{ if(!running) startScroll(); });
+    panelStartBtn.addEventListener('click', ()=>{ startScroll(); });
     pauseBtn.addEventListener('click', ()=>{
       if(running) pauseScroll();
-      else if(paused) startScroll();
+      else if(paused && !finished) startScroll();
       else startScroll();
     });
+    stopBtn.addEventListener('click', ()=>{ stopAndReset(); });
 
-    // Fullscreen toggle
-    fsBtn.addEventListener('click', async ()=>{
+    rewindBtn.addEventListener('click', ()=>{ smoothReturnToStart(900); });
+
+    manualBtn.addEventListener('click', ()=>{
+      if(manualMode){ disableManualMode(); }
+      else { enableManualMode(); }
+    });
+
+    speedUp.addEventListener('click', ()=>{ speedRange.value = Math.min(Number(speedRange.max), Number(speedRange.value) + 10); speedRange.dispatchEvent(new Event('input')); });
+    speedDown.addEventListener('click', ()=>{ speedRange.value = Math.max(Number(speedRange.min), Number(speedRange.value) - 10); speedRange.dispatchEvent(new Event('input')); });
+
+    // Fullscreen toggle with vendor prefixes & handling for iOS Safari as best effort
+    async function toggleFullscreen(){
       try{
-        if(!document.fullscreenElement){
-          if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+        if(!document.fullscreenElement && !document.webkitFullscreenElement){
+          const el = document.documentElement;
+          if(el.requestFullscreen) await el.requestFullscreen();
+          else if(el.webkitRequestFullscreen) await el.webkitRequestFullscreen(); // older iOS
           restoreBtn.style.display = 'block';
         } else {
           if(document.exitFullscreen) await document.exitFullscreen();
+          else if(document.webkitExitFullscreen) await document.webkitExitFullscreen();
           restoreBtn.style.display = 'none';
         }
       }catch(e){
-        // fail silently
-        console.error(e);
+        console.warn('Fullscreen API failed', e);
       }
-    });
-
+    }
+    fsBtn.addEventListener('click', toggleFullscreen);
     restoreBtn.addEventListener('click', async ()=>{
       try{
         if(document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
+        else if(document.webkitFullscreenElement && document.webkitExitFullscreen) await document.webkitExitFullscreen();
       }catch(e){}
       restoreBtn.style.display = 'none';
       closePanel();
     });
 
-    // Init
+    // Keyboard shortcuts: Space - pause/start, f - fullscreen, arrows adjust speed
+    window.addEventListener('keydown', e=>{
+      if(e.code === 'Space'){
+        e.preventDefault();
+        if(running) pauseScroll();
+        else if(paused && !finished) startScroll();
+        else startScroll();
+      }
+      if(e.key && e.key.toLowerCase()==='f'){
+        e.preventDefault();
+        toggleFullscreen();
+      }
+      if(e.key === 'Escape'){
+        if(panel.classList.contains('open')) closePanel();
+        if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+      }
+      if(e.key === 'ArrowUp'){ e.preventDefault(); speedRange.value = Math.min(Number(speedRange.max), Number(speedRange.value) + 5); speedRange.dispatchEvent(new Event('input')); }
+      if(e.key === 'ArrowDown'){ e.preventDefault(); speedRange.value = Math.max(Number(speedRange.min), Number(speedRange.value) - 5); speedRange.dispatchEvent(new Event('input')); }
+    });
+
+    // Adjust sizes on load/resize
+    let resizeTimeout = null;
+    window.addEventListener('resize', ()=>{ clearTimeout(resizeTimeout); resizeTimeout = setTimeout(()=>{ renderContent(); recalcSizes(); const th = toolbar.getBoundingClientRect().height || 64; if(!panel.classList.contains('open')) setControlHeight(th); else setControlHeight(panel.getBoundingClientRect().height + 12); }, 120); });
+
+    // Initialize saved settings
     window.addEventListener('load', ()=>{
       const savedTheme = sessionStorage.getItem('teleprompter_theme') || 'dark';
       const savedFont = sessionStorage.getItem('teleprompter_font') || 'Nunito';
@@ -440,44 +713,31 @@
       applyFont(savedFont);
       applyAlignment(savedAlign);
       applyUppercase(savedCase);
+      // reflect ranges to UI
+      speedLabel.textContent = speedRange.value;
+      sizeRange.dispatchEvent(new Event('input'));
       renderContent();
       if(window.innerWidth <= 700){ closePanel(); }
       const th = toolbar.getBoundingClientRect().height || 64;
       setControlHeight(th);
     });
 
-    // Keep content accessible: click content toggles pause/start
+    // Prevent accidental text selection when dragging on controls
+    ['mousedown','touchstart'].forEach(ev=> {
+      document.querySelectorAll('.btn, input, select, textarea').forEach(el => {
+        el.addEventListener(ev, (e)=> e.stopPropagation());
+      });
+    });
+
+    // Accessibility: clicking on content toggles start/pause
     content.addEventListener('click', ()=>{
       if(running) pauseScroll();
-      else if(paused) startScroll();
+      else if(paused && !finished) startScroll();
       else startScroll();
     });
 
-    // Accessibility keyboard shortcuts
-    window.addEventListener('keydown', e=>{
-      if(e.code === 'Space'){
-        e.preventDefault();
-        if(running) pauseScroll();
-        else if(paused) startScroll();
-        else startScroll();
-      }
-      if(e.key && e.key.toLowerCase()==='f'){
-        e.preventDefault();
-        (async ()=>{
-          try{
-            if(!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-            else if(document.exitFullscreen) await document.exitFullscreen();
-          }catch(e){}
-        })();
-      }
-      if(e.key === 'Escape'){
-        if(panel.classList.contains('open')) closePanel();
-        if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
-      }
-    });
-
-    // Ensure content and control heights recalc on orientation/resize
-    window.addEventListener('resize', ()=>{ setTimeout(()=>{ renderContent(); recalcSizes(); const th = toolbar.getBoundingClientRect().height || 64; if(!panel.classList.contains('open')) setControlHeight(th); else setControlHeight(panel.getBoundingClientRect().height + 12); }, 120); });
+    // Initial recalc to set start/end
+    setTimeout(()=>{ renderContent(); recalcSizes(); }, 120);
   </script>
 </body>
 </html>
