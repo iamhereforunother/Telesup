@@ -192,12 +192,6 @@
     </div>
   </div>
 
-  <div class="viewport" id="viewport">
-    <div class="frame">
-      <div id="content" class="content" tabindex="-1" aria-live="polite">Вставьте текст или нажмите кнопку "Настройки" внизу, чтобы вставить текст и параметры.</div>
-    </div>
-  </div>
-
   <!-- Toolbar: Start, Pause (SVG), Settings -->
   <div class="toolbar glass" id="toolbar" role="region" aria-label="Панель управления">
     <div class="controls">
@@ -523,7 +517,7 @@
       setTimeout(()=> setControlHeight(toolbar.getBoundingClientRect().height || 64), 80);
 
       // Trigger splash animation on load
-      startSplashIntro({ duration: 3600 });
+      startSplashIntro({ duration: 2200 });
     });
 
     // Prevent accidental selection when interacting with controls
